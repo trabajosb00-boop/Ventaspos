@@ -28,7 +28,7 @@ import {
   Download
 } from "lucide-react";
 
-// --- PRODUCTOS DE MI TIENDA ---
+// --- PRODUCTOS DE ACS.MASCOTAS ---
 const productosMock = [
   { id: 1, nombre: "Cama Antidesgarro Grande 90cm", sku: "ACS-CAMA-01", stock: 3, precio: 39990, categoria: "Camas", img: "🛏️" },
   { id: 2, nombre: "Correa Retráctil 5m Negra", sku: "ACS-COR-02", stock: 12, precio: 12990, categoria: "Paseo", img: "🦮" },
@@ -65,7 +65,7 @@ const ventas7Dias = [
 
 export default function App() {
   const [activeSection, setActiveSection] = useState("Dashboard");
-  const [sucursal, setSucursal] = useState("Mi tienda");
+  const [sucursal, setSucursal] = useState("MI TIENDA - Santiago");
   const [showSucursal, setShowSucursal] = useState(false);
   const [showPOS, setShowPOS] = useState(false);
   const [cart, setCart] = useState<{ id: number; qty: number }[]>([{ id: 1, qty: 1 }, { id: 2, qty: 1 }]);
@@ -147,8 +147,8 @@ export default function App() {
           <div className="h-[64px] px-5 flex items-center gap-3 border-b border-zinc-100">
             <div className="w-8 h-8 rounded-[10px] bg-zinc-900 text-white flex items-center justify-center font-bold">A</div>
             <div className="flex-1">
-              <div className="text-[13px] font-semibold leading-none">ACS Mascotas</div>
-              <div className="text-[11px] text-zinc-500 mt-1">acs.mascotas</div>
+              <div className="text-[13px] font-semibold leading-none">MI TIENDA</div>
+              <div className="text-[11px] text-zinc-500 mt-1">mi.tienda</div>
             </div>
             <Bell size={18} className="text-zinc-400" />
           </div>
@@ -281,7 +281,7 @@ export default function App() {
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex">
           <div className="ml-auto w-full max-w-[1020px] h-full bg-white shadow-2xl flex flex-col">
             <div className="h-[64px] px-5 flex items-center justify-between border-b border-zinc-200 shrink-0">
-              <div className="flex items-center gap-3"><div className="w-8 h-8 rounded-[10px] bg-zinc-900 text-white flex items-center justify-center"><ShoppingCart size={16} /></div><div><div className="font-semibold text-[14px]">Punto de Venta • ACS Mascotas</div><div className="text-[11px] text-zinc-500">Stock descuenta solo y boleta al SII automática</div></div></div>
+              <div className="flex items-center gap-3"><div className="w-8 h-8 rounded-[10px] bg-zinc-900 text-white flex items-center justify-center"><ShoppingCart size={16} /></div><div><div className="font-semibold text-[14px]">Punto de Venta • MI TIENDA</div><div className="text-[11px] text-zinc-500">Stock descuenta solo y boleta al SII automática</div></div></div>
               <button onClick={() => setShowPOS(false)} className="w-8 h-8 rounded-full border border-zinc-200 flex items-center justify-center"><X size={16} /></button>
             </div>
             <div className="flex-1 flex flex-col lg:flex-row min-h-0">

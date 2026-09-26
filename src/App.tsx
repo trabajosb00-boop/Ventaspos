@@ -28,7 +28,7 @@ import {
   Download
 } from "lucide-react";
 
-// --- PRODUCTOS DE ACS.MASCOTAS ---
+// --- PRODUCTOS DE MI TIENDA ---
 const productosMock = [
   { id: 1, nombre: "Cama Antidesgarro Grande 90cm", sku: "ACS-CAMA-01", stock: 3, precio: 39990, categoria: "Camas", img: "🛏️" },
   { id: 2, nombre: "Correa Retráctil 5m Negra", sku: "ACS-COR-02", stock: 12, precio: 12990, categoria: "Paseo", img: "🦮" },

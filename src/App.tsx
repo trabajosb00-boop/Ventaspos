@@ -65,7 +65,7 @@ const ventas7Dias = [
 
 export default function App() {
   const [activeSection, setActiveSection] = useState("Dashboard");
-  const [sucursal, setSucursal] = useState("ACS Mascotas - Santiago");
+  const [sucursal, setSucursal] = useState("Mi tienda");
   const [showSucursal, setShowSucursal] = useState(false);
   const [showPOS, setShowPOS] = useState(false);
   const [cart, setCart] = useState<{ id: number; qty: number }[]>([{ id: 1, qty: 1 }, { id: 2, qty: 1 }]);

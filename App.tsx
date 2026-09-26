@@ -102,7 +102,7 @@ export default function App() {
   const handleConfirmSale = () => {
     const newId = `#${2848 + ventas.length}`;
     setVentas(v => [{ id: newId, cliente: clientePOS, monto: totalCart, metodo: metodoPago, estado: metodoPago === "Transferencia" ? "Pendiente" : "Pagado", hora: new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }), envio: "Retiro" }, ...v]);
-    setToast(`Venta  ${newId} creada • $${totalCart.toLocaleString('es-CL')} - ${metodoPago}`);
+    setToast(`Venta ${newId} creada • $${totalCart.toLocaleString('es-CL')} - ${metodoPago}`);
     setTimeout(() => setToast(null), 3000);
     setCart([]);
     setShowPOS(false);
@@ -273,63 +273,63 @@ export default function App() {
                 </div>
               </div>
             </div>
-          )}
-        </main>
-      </div>
+          )}) } )}
+        </main></main> </main>
+      </div></div> </div>
 
-      {showPOS && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex">
-          <div className="ml-auto w-full max-w-[1020px] h-full bg-white shadow-2xl flex flex-col">
-            <div className="h-[64px] px-5 flex items-center justify-between border-b border-zinc-200 shrink-0">
-              <div className="flex items-center gap-3"><div className="w-8 h-8 rounded-[10px] bg-zinc-900 text-white flex items-center justify-center"><ShoppingCart size={16} /></div><div><div className="font-semibold text-[14px]">Punto de Venta • ACS Mascotas</div><div className="text-[11px] text-zinc-500">Stock descuenta solo y boleta al SII automática</div></div></div>
-              <button onClick={() => setShowPOS(false)} className="w-8 h-8 rounded-full border border-zinc-200 flex items-center justify-center"><X size={16} /></button>
-            </div>
-            <div className="flex-1 flex flex-col lg:flex-row min-h-0">
-              <div className="flex-1 p-4 lg:p-5 overflow-y-auto">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="flex-1 relative"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" /><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar cama, correa, juguete..." className="w-full pl-9 pr-3 py-2.5 rounded-[12px] border border-zinc-200 bg-zinc-50 text-[13px] focus:outline-none" /></div>
-                  <button className="px-3 py-2.5 rounded-[12px] border border-zinc-200 bg-white text-[12px] flex items-center gap-1"><Filter size={14} /> Filtro</button>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {productosFiltrados.map(p => (
-                    <button key={p.id} onClick={() => handleAddToCart(p.id)} className="text-left bg-white border border-zinc-200 rounded-[14px] p-3 flex gap-3 hover:border-zinc-300 transition">
-                      <div className="w-12 h-12 rounded-[12px] bg-[#f6f6f3] border flex items-center justify-center text-[22px]">{p.img}</div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-[13px] font-medium truncate">{p.nombre}</div>
-                        <div className="text-[11px] text-zinc-500 mono">{p.sku} • Stock {p.stock}</div>
-                        <div className="mt-2 flex items-center justify-between"><span className="mono font-semibold text-[13px]">${p.precio.toLocaleString('es-CL')}</span><span className="w-6 h-6 rounded-full bg-zinc-900 text-white flex items-center justify-center"><Plus size={12} /></span></div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="w-full lg:w-[380px] bg-[#f6f6f3] flex flex-col shrink-0">
-                <div className="p-5 border-b border-zinc-200 bg-white">
-                  <div className="flex items-center justify-between"><h3 className="font-semibold text-[14px]">Carrito • {cartDetalle.length}  productos</h3><button onClick={() => setCart([])} className="text-[11px] text-zinc-500 hover:text-zinc-900">Vaciar</button></div>
-                  <div className="mt-3"><div className="flex items-center gap-2 p-2.5 rounded-[12px] border border-zinc-200 bg-zinc-50"><Users size={16} className="text-zinc-500" /><input value={clientePOS} onChange={e => setClientePOS(e.target.value)} className="flex-1 bg-transparent text-[13px] focus:outline-none" placeholder="Cliente (RUT / nombre)" /><MoreHorizontal size={16} className="text-zinc-400" /></div></div>
-                </div>
-                <div className="flex-1 overflow-y-auto p-3 space-y-2">
-                  {cartDetalle.length === 0 && (<div className="py-16 text-center text-zinc-400"><ShoppingCart size={28} className="mx-auto mb-3 opacity-50" /><div className="text-[13px]">Carrito vacío</div><div className="text-[11px] mt-1">Agrega productos para vender</div></div>)}
-                  {cartDetalle.map(item => (
-                    <div key={item.id} className="bg-white border border-zinc-200 rounded-[12px] p-3 flex gap-3">
-                      <div className="w-10 h-10 rounded-[10px] bg-zinc-50 border flex items-center justify-center">{item.img}</div>
-                      <div className="flex-1 min-w-0"><div className="text-[12px] font-medium truncate">{item.nombre}</div><div className="text-[11px] text-zinc-500 mono">${item.precio.toLocaleString('es-CL')} x {item.qty}</div><div className="mt-2 flex items-center gap-1"><button onClick={() => setCart(c => c.map(x => x.id === item.id ? { ...x, qty: Math.max(1, x.qty - 1) } : x))} className="w-6 h-6 rounded-full border border-zinc-200 flex items-center justify-center hover:bg-zinc-50"><Minus size={12} /></button><span className="w-6 text-center text-[12px] mono font-medium">{item.qty}</span><button onClick={() => setCart(c => c.map(x => x.id === item.id ? { ...x, qty: x.qty + 1 } : x))} className="w-6 h-6 rounded-full bg-zinc-900 text-white flex items-center justify-center"><Plus size={12} /></button><span className="ml-auto mono text-[12px] font-semibold">${item.subtotal.toLocaleString('es-CL')}</span></div></div>
-                      <button onClick={() => setCart(c => c.filter(x => x.id !== item.id))} className="self-start p-1 hover:bg-zinc-100 rounded-full"><X size={14} className="text-zinc-400" /></button>
-                    </div>
-                  ))}
-                </div>
-                <div className="p-5 bg-white border-t border-zinc-200 space-y-4">
-                  <div><div className="text-[11px] font-semibold tracking-widest uppercase text-zinc-400 mb-2">Método de pago</div><div className="grid grid-cols-2 gap-2">{[{ id: "Webpay", label: "Webpay Plus", icon: CreditCard, desc: "Tarjetas" }, { id: "Transferencia", label: "Transferencia", icon: Building2, desc: "Banco" }, { id: "Efectivo", label: "Efectivo", icon: Banknote, desc: "Caja" }, { id: "Mercado Pago", label: "Mercado Pago", icon: Smartphone, desc: "QR / Link" }].map(m => (<button key={m.id} onClick={() => setMetodoPago(m.id)} className={`text-left p-3 rounded-[12px] border flex items-center gap-2.5 transition ${metodoPago === m.id ? "bg-zinc-900 text-white border-zinc-900 shadow-sm" : "bg-white border-zinc-200 hover:border-zinc-300"}`}><m.icon size={16} className={metodoPago === m.id ? "text-white" : "text-zinc-500"} /><div><div className="text-[12px] font-medium leading-none">{m.label}</div><div className={`text-[10px] mt-1 ${metodoPago === m.id ? "text-white/70" : "text-zinc-500"}`}>{m.desc}</div></div>{metodoPago === m.id && <Check size={14} className="ml-auto" />}</button>))}</div></div>
-                  <div className="space-y-2 text-[13px] border-t border-zinc-100 pt-4"><div className="flex justify-between text-zinc-500"><span>Subtotal</span><span className="mono">${totalCart.toLocaleString('es-CL')}</span></div><div className="flex justify-between text-zinc-500"><span>IVA 19%</span><span className="mono">${iva.toLocaleString('es-CL')}</span></div><div className="flex justify-between font-semibold text-[16px] pt-2 border-t border-zinc-100"><span>Total</span><span className="mono">${(totalCart).toLocaleString('es-CL')}</span></div></div>
-                  <button disabled={cartDetalle.length === 0} onClick={handleConfirmSale} className="w-full bg-[#00B86F] hover:bg-[#00a862] disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-semibold py-3.5 rounded-[14px] flex items-center justify-center gap-2 shadow-[0_12px_24px_-10px_#00B86F] transition"><Zap size={18} /> Cobrar ${totalCart.toLocaleString('es-CL')} • {metodoPago}</button>
-                  <div className="text-[11px] text-center text-zinc-500">Boleta electrónica se enviará automáticamente al SII • Folio 884</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      {showPOS && ({showPOS && (en inglés) {showPOS && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex"><div className="fijo inset-0 z-50 bg-black/40 fondo-blur-sm flex"> <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex">
+          <div className="ml-auto w-full max-w-[1020px] h-full bg-white shadow-2xl flex flex-col"><div className="ml-auto w-full max-w-[1020px] h-full bg-white shadow-2xl flex-col"> <div className="ml-auto w-full max-w-[1020px] h-full bg-white shadow-2xl flex flex-col">
+            <div className="h-[64px] px-5 flex items-center justify-between border-b border-zinc-200 shrink-0"><div className="h-[64px] px-5 flex items-centro justifica-entre border-b border-zinc-200 shrink-0"> <div className="h-[64px] px-5 flex items-center justify-between border-b border-zinc-200 shrink-0">
+              <div className="flex items-center gap-3"><div className="w-8 h-8 rounded-[10px] bg-zinc-900 text-white flex items-center justify-center"><ShoppingCart size={16} /></div><div><div className="font-semibold text-[14px]">Punto de Venta • ACS Mascotas</div><div className="text-[11px] text-zinc-500">Stock descuenta solo y boleta al SII automática</div></div></div><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-[10px] bg-zinc-900 text-white flex items-center justify-center"><ShoppingCart size={16} /></div><div><div className="font-semibold text-[14px]">Punto de Venta • ACS Mascotas</div><div className="text-[11px] text-zinc-500">Stock descuenta solo y boleta al SII automática</div></div></div> <div className="flex items-center gap-3"><div className="w-8 h-8 rounded-[10px] bg-zinc-900 text-white flex items-center justify-center"><ShoppingCart size={16} /></div><div><div className="font-semibold text-[14px]">Punto de Venta • ACS Mascotas</div><div className="text-[11px] text-zinc-500">Stock descuenta solo y boleta al SII automática</div></div></div>
+              <button onClick={() => setShowPOS(false)} className="w-8 h-8 rounded-full border border-zinc-200 flex items-center justify-center"><X size={16} /></button><button onClick={ () => setShowPOS (false) } className="w-8 h-8 borde redondeado-fronte-zinc-200 flex items-center warrant-center"><X size={16} /></button> <button onClick={() => setShowPOS(false)} className="w-8 h-8 rounded-full border border-zinc-200 flex items-center justify-center"><X size={16} /></button>
+            </div></div> </div>
+            <div className="flex-1 flex flex-col lg:flex-row min-h-0"><div className="flex-1 flex-col lg:flex-row min-h-0"> <div className="flex-1 flex flex-col lg:flex-row min-h-0">
+              <div className="flex-1 p-4 lg:p-5 overflow-y-auto"><div className="flex-1 p-4 lg:p-5 overflow-y-auto"> <div className="flex-1 p-4 lg:p-5 overflow-y-auto">
+                <div className="flex items-center gap-2 mb-4"><div className="flex items-center gap-2 mb-4"> <div className="flex items-center gap-2 mb-4">
+                  <div className="flex-1 relative"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" /><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar cama, correa, juguete..." className="w-full pl-9 pr-3 py-2.5 rounded-[12px] border border-zinc-200 bg-zinc-50 text-[13px] focus:outline-none" /></div><div className="flex-1 relative"><Search size={16} className="absoluto left-3 top-1/2 -translate-y-1/2 text-zinc-400" /><input value={search} onChange={e => setSearch (e.target.value) } placeholder="Buscar cama, correa, juguete"... className="w-full pl-9 pr-3 py-2.5 redondeado-[12px] Border-zinc-200 bg-zinc-50 text-[13px] Focus:outline-none" /></div> <div className="flex-1 relative"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" /><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar cama, correa, juguete..." className="w-full pl-9 pr-3 py-2.5 rounded-[12px] border border-zinc-200 bg-zinc-50 text-[13px] focus:outline-none" /></div>
+                  <button className="px-3 py-2.5 rounded-[12px] border border-zinc-200 bg-white text-[12px] flex items-center gap-1"><Filter size={14} /> Filtro</button><button className="px-3 py-2.5 rounded-[12px] border border-zinc-200 bg-white text-[12px] flex items-center gap-1"><Filter size={14} /> Filtro</button>
+                </div></div> </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3"><div className="grid grid-cols-1 sm:grid-cols-2 gap-3"> <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {productosFiltrados.map(p => ({productosFiltrados.map(p => ( {productosFiltrados..map(p => (
+                    <button key={p.id} onClick={() => handleAddToCart(p.id)} className="text-left bg-white border border-zinc-200 rounded-[14px] p-3 flex gap-3 hover:border-zinc-300 transition"><button key={p.id} onClick={() => handleAddToCart(p.id)} className="text-left bg-white border border-zinc-200 rounded-[14px] p-3 flex gap-3 hover:border-zinc-300 transition">
+                      <div className="w-12 h-12 rounded-[12px] bg-[#f6f6f3] border flex items-center justify-center text-[22px]">{p.img}</div><div className="w-12 h-12 rounded-[12px] bg-[#f6f6f3] border flex items-center justify-center text-[22px]">{p.img}</div>
+                      <div className="flex-1 min-w-0"><div className="flex-1 min-w-0"> <div className="flex-1 min-w-0">
+                        <div className="text-[13px] font-medium truncate">{p.nombre}</div><div className="text-[13px] font-medium truncate">{p.nombre}</div> <div className="text-[13px] font-medium truncate">{p.nombre}</div>
+                        <div className="text-[11px] text-zinc-500 mono">{p.sku} • Stock {p.stock}</div><div className="text-[11px] text-zinc-500 mono">{p.sku} • Stock {p.stock}</div> <div className="text-[11px] text-zinc-500 mono">{p.sku} • Stock {p.stock}</div>
+                        <div className="mt-2 flex items-center justify-between"><span className="mono font-semibold text-[13px]">${p.precio.toLocaleString('es-CL')}</span><span className="w-6 h-6 rounded-full bg-zinc-900 text-white flex items-center justify-center"><Plus size={12} /></span></div><div className="mt-2 flex items-center justify-between"><span className="mono font-semibold text-[13px]">${p.precio.toLocaleString('es-CL')}</span><span className="w-6 h-6 rounded-full bg-zinc-900 text-white flex items-center justify-center"><Plus size={12} /></span></div>
+                      </div></div> </div>
+                    </button></botón> </button>
+                  ))})) } ))}
+                </div></div>
+              <</div>
+              <div className=<div className="w-full lg:w-[380px] bg-[#f6f6f3] flex flex-col shrink-0">
+                <div className="p-5 border-b border-zinc-200 bg-white"><div className="p-5 border-b border-zinc-200 bg-white">
+                  <div className="flex items-center justify-between"><h3 className="font-semibold text-[14px]">Carrito • {cartDetalle.length} productos</h3><button onClick={() => setCart([])} className="text-[11px] text-zinc-500 hover:text-zinc-900">Vaciar</button></div><div className="flex items-center justify-between"><h3 className="font-semibold text-[14px]">Carrito • {cartDetalle.length} productos</h3><button onClick={() => setCart([])} className="text-[11px] text-zinc-500 hover:text-zinc-900">Vaciar</button></div>
+                  <div className="mt-3"><div className="flex items-center gap-2 p-2.5 rounded-[12px] border border-zinc-200 bg-zinc-50"><Users size={16} className="text-zinc-500" /><input value={clientePOS} onChange={e => setClientePOS(e.target.value)} className="flex-1 bg-transparent text-[13px] focus:outline-none" placeholder="Cliente (RUT / nombre)" /><MoreHorizontal size={16} className="text-zinc-400" /></div></div><div className="mt-3"><div className="flex items-center gap-2 p-2.5 rounded-[12px] border border-zinc-200 bg-zinc-50"><Users size={16} className="text-zinc-500" /><input value={clientePOS} onChange={e => setClientePOS(e.target.value)} className="flex-1 bg-transparent text-[13px] focus:outline-none" placeholder="Cliente (RUT / nombre)" /><MoreHorizontal size={16} className="text-zinc-400" /></div></div>
+                </div></div>
+                <div className=<div className="flex-1 overflow-y-auto p-3 space-y-2">
+                  {cartDetalle.length === 0 && (<div className="py-16 text-center text-zinc-400"><ShoppingCart size={28} className="mx-auto mb-3 opacity-50" /><div className="text-[13px]">Carrito vacío</div><div className="text-[11px] mt-1">Agrega productos para vender</div></div>)}{cartDetalle..<ShoppingCart  size={28} className="mx-auto mb-3 opacity-50" /><div className="text-[13px]">Carrito vacío</div><div className="text-[11px] mt-1">Agrega productos para vender</div></div>)} {cartDetalle.length === 0 && (<div className="py-16 text-center text-zinc-400"><ShoppingCart size={28} className="mx-auto mb-3 opacity-50" /><div className="text-[13px]">Carrito vacío</div><div className="text-[11px] mt-1">Agrega productos para vender</div></div>)}
+                  {cartDetalle.map(item => ({cartDetalle.map(item => (
+                    <div key={item.id} className="bg-white border border-zinc-200 rounded-[12px] p-3 flex gap-3"><div key={item.id} className="bg-white border border-zinc-200 rounded-[12px] p-3 flex gap-3">
+                      <div className="w-10 h-10 rounded-[10px] bg-zinc-50 border flex items-center justify-center">{item.img}</div><div className="w-10 h-10 rounded-[10px] bg-zinc-50 border flex items-center justify-center">{item.img}</div>
+                      <div className="flex-1 min-w-0"><div className="text-[12px] font-medium truncate">{item.nombre}</div><div className="text-[11px] text-zinc-500 mono">${item.precio.toLocaleString('es-CL')} x {item.qty}</div><div className="mt-2 flex items-center gap-1"><button onClick={() => setCart(c => c.map(x => x.id === item.id ? { ...x, qty: Math.max(1, x.qty - 1) } : x))} className="w-6 h-6 rounded-full border border-zinc-200 flex items-center justify-center hover:bg-zinc-50"><Minus size={12} /></<div className="flex-1 min-w-0"><div className="text-[12px] font-medium truncate">{item.nombre}</div><div className="text-[11px] text-zinc-500 mono">${item.precio.toLocaleString('es-CL')} x {item.qty}</div><div className="mt-2 flex items-center gap-1"><button onClick={() => setCart(c => c.map(x => x.id === item.id ? { ...x, qty: Math.max(1, x.qty - 1) } : x))} className="w-6 h-6 rounded-full border border-zinc-200 flex items-center justify-center hover:bg-zinc-50"><Minus size={12} /></button><span className="w-6 text-center text-[12px] mono font-medium">{item.qty}</span><button onClick={() => setCart(c => c.map(x => x.id === item.id ? { ...x, qty: x.qty + 1 } : x))} className="w-6 h-6 rounded-full bg-zinc-900 text-white flex items-center justify-center"><Plus size={12} /></button><span className="ml-auto mono text-[12px] font-semibold">${item.subtotal.toLocaleString('es-CL')}</span></div></div>
+                      <button onClick={() => setCart(c => c.filter(x => x.id !== item.id))} className="self-start p-1 hover:bg-zinc-100 rounded-full"><X size={14} className="text-zinc-400" /></button><button onClick={() => setCart(c => c.filter(x => x.id !== item.id))} className="self-start p-1 hover:bg-zinc-100 rounded-full"><X size={14} className="text-zinc-400" /></button>
+                    </div></div>
+                  ))}))}
+                </div></div>
+                <div className="p-5 bg-white border-t border-zinc-200 space-y-4"><div className="p-5 bg-white border-t border-zinc-200 space-y-4">
+                  <div><div className="text-[11px] font-semibold tracking-widest uppercase text-zinc-400 mb-2">Método de pago</div><div className="grid grid-cols-2 gap-2">{[{ id: "Webpay", label: "Webpay Plus", icon: CreditCard, desc: "Tarjetas" }, { id: "Transferencia", label: "Transferencia", icon: Building2, desc: "Banco" }, { id: "Efectivo", label: "Efectivo", icon: Banknote, desc: "Caja" }, { id: "Mercado Pago", label: "Mercado Pago", icon: Smartphone, desc: "QR / Link" }].map(m => (<button key={m.id} <div><div className="text-[11px] font-semibold tracking-widest uppercase text-zinc-400 mb-2">Método de pago</div><div className="grid grid-cols-2 gap-2">{[{ id: "Webpay", label: "Webpay Plus", icon: CreditCard, desc: "Tarjetas" }, { id: "Transferencia", label: "Transferencia", icon: Building2, desc: "Banco" }, { id: "Efectivo", label: "Efectivo", icon: Banknote, desc: "Caja" }, { id: "Mercado Pago", label: "Mercado Pago", icon: Smartphone, desc: "QR / Link" }].map(m => (<button key={m.id} onClick={() => setMetodoPago(m.id)} className={`text-left p-3 rounded-[12px] border flex items-center gap-2.5 transition ${metodoPago === m.id ? "bg-zinc-900 text-white border-zinc-900 shadow-sm" : "bg-white border-zinc-200 hover:border-zinc-300"}`}><m.icon size={16} className={metodoPago === m.id ? "text-white" : "text-zinc-500"} /><div><div className="text-[12px] font-medium leading-none">{m.label}</div><div className={`text-[10px] mt-1 ${metodoPago === m.id ? "text-white/70" : "text-zinc-500"}`}>{m.desc}</div></div>{metodoPago === m.id && <Check size={14} className="ml-auto" />}</button>))}</div></div>
+                  <div className="space-y-2 text-[13px] border-t border-zinc-100 pt-4"><div className="flex justify-between text-zinc-500"><span>Subtotal</span><span className="mono">${totalCart.toLocaleString('es-CL')}</span></div><div className="flex justify-between text-zinc-500"><span>IVA 19%</span><span className="mono">${iva.toLocaleString('es-CL')}</span></div><div className="flex justify-between font-semibold text-[16px] pt-2 border-t border-zinc-100"><span>Total</span><span className="mono">${(tota<div className="space-y-2 text-[13px] border-t border-zinc-100 pt-4"><div className="flex justify-between text-zinc-500"><span>Subtotal</span><span className="mono">${totalCart.toLocaleString('es-CL')}</span></div><div className="flex justify-between text-zinc-500"><span>IVA 19%</span><span className="mono">${iva.toLocaleString('es-CL')}</span></div><div className="flex justify-between font-semibold text-[16px] pt-2 border-t border-zinc-100"><span>Total</span><span className="mono">${(totalCart).toLocaleString('es-CL')}</span></div></div>
+                  <button disabled={cartDetalle.length === 0} onClick={handleConfirmSale} className="w-full bg-[#00B86F] hover:bg-[#00a862] disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-semibold py-3.5 rounded-[14px] flex items-center justify-center gap-2 shadow-[0_12px_24px_-10px_#00B86F] transition"><Zap size={18} /> Cobrar ${totalCart.toLocaleString('es-CL')} • {metodoPago}</button><button disabled={cartDetalle.length === 0} onClick={handleConfirmSale} className="w-full bg-[#00B86F] hover:bg-[#00a862] disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-semibold py-3.5 rounded-[14px] flex items-center justify-center gap-2 shadow-[0_12px_24px_-10px_#00B86F] transition"><Zap size={18} /> Cobrar ${totalCart.toLocaleString('es-CL')} • {metodoPago}</button>
+                  <div className="text-[11px] text-center text-zinc-500">Boleta electrónica se enviará automáticamente al SII • Folio 884</div><div className="text-[11px] text-center text-zinc-500">Boleta electrónica se enviará automáticamente al SII • Folio 884</div> <div className="text-[11px] text-center text-zinc-500">Boleta electrónica se enviará automáticamente al SII • Folio 884</div>
+                </div></div>
+              </div></div>
+            </div></div>
+          </div></div>
+        </div></div>
       )}
-      {toast && (<div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-zinc-900 text-white text-[13px] px-4 py-2.5 rounded-full shadow-xl flex items-center gap-2 z-[90]"><span className="w-2 h-2 rounded-full bg-[#00B86F] animate-pulse" /> {toast}</div>)}
-    </div>
+      {toast && (<div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-zinc-900 text-white text-[13px] px-4 py-2.5 rounded-full shadow-xl flex items-center gap-2 z-[90]"><span className="w-2 h-2 rounded-full bg-[#00B86F] animate-pulse" /> {toast}</div>)}{toast && (<div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-zinc-900 text-white text-[13px] px-4 py-2.5 rounded-full shadow-xl flex items-center gap-2 z-[90]"><span className="w-2 h-2 rounded-full bg-[#00B86F] animate-pulse" /> {toast}</div>)}
+    </div></div>
   );
-}
+   }

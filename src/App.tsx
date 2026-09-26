@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 
 type Producto = { id: number; nombre: string; sku: string; stock: number; precio: number; categoria: string; img: string; };
-type Venta = { id: string; cliente: string; monto: number; metodo: string; estado: string; hora: string; envio: string; };
+type Venta = { id: string; cliente: string; monto: number; metodo: string; estado: string; hora: string; envio: string; comprobante: string; direccion?: string; };
 
 const productosInicial: Producto[] = [
   { id: 1, nombre: "Café Grano Colombia 1kg", sku: "GEN-001", stock: 12, precio: 12990, categoria: "General", img: "☕" },
@@ -40,8 +40,8 @@ const productosInicial: Producto[] = [
 ];
 
 const ventasInicial: Venta[] = [
-  { id: "#2847", cliente: "Cliente Ejemplo 1", monto: 42980, metodo: "Webpay", estado: "Pagado", hora: "10:42", envio: "Retiro" },
-  { id: "#2846", cliente: "Cliente Ejemplo 2", monto: 12990, metodo: "Transferencia", estado: "Pendiente", hora: "09:58", envio: "Envío" },
+  { id: "#2847", cliente: "Cliente Ejemplo 1", monto: 42980, metodo: "Webpay", estado: "Pagado", hora: "10:42", envio: "Retiro", comprobante: "CMP-00123" },
+  { id: "#2846", cliente: "Cliente Ejemplo 2", monto: 12990, metodo: "Transferencia", estado: "Pendiente", hora: "09:58", envio: "Envío", comprobante: "CMP-00124", direccion: "Av. Providencia 123" },
 ];
 
 export default function App() {
@@ -58,6 +58,9 @@ export default function App() {
   const [search, setSearch] = useState("");
   const [metodoPago, setMetodoPago] = useState("Webpay");
   const [clientePOS, setClientePOS] = useState("Cliente general");
+  const [comprobante, setComprobante] = useState("");
+  const [tipoEntrega, setTipoEntrega] = useState<"Retiro" | "Envío">("Retiro");
+  const [direccionEnvio, setDireccionEnvio] = useState("");
   const [toast, setToast] = useState<string | null>(null);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [showAddProd, setShowAddProd] = useState(false);
@@ -77,13 +80,29 @@ export default function App() {
 
   const confirmarVenta = () => {
     if (cartDetalle.length === 0) return;
+    if (tipoEntrega === "Envío" && !direccionEnvio.trim()) {
+      setToast("Ingresa dirección de envío");
+      setTimeout(()=>setToast(null),2000);
+      return;
+    }
     const newId = `#${2848 + ventas.length}`;
     // descontar stock
     setProductos(prev => prev.map(p => { const item = cart.find(c => c.id === p.id); if (item) return { ...p, stock: Math.max(0, p.stock - item.qty) }; return p; }));
-    setVentas(v => [{ id: newId, cliente: clientePOS, monto: totalCart, metodo: metodoPago, estado: metodoPago === "Transferencia" ? "Pendiente" : "Pagado", hora: new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }), envio: "Retiro" }, ...v]);
-    setToast(`Venta ${newId} - $${totalCart.toLocaleString('es-CL')}`);
+    setVentas(v => [{ 
+      id: newId, 
+      cliente: clientePOS, 
+      monto: totalCart, 
+      metodo: metodoPago, 
+      estado: metodoPago === "Transferencia" ? "Pendiente" : "Pagado", 
+      hora: new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }), 
+      envio: tipoEntrega,
+      comprobante: comprobante || `CMP-${Date.now().toString().slice(-6)}`,
+      direccion: tipoEntrega === "Envío" ? direccionEnvio : undefined
+    }, ...v]);
+    setToast(`Venta ${newId} - $${totalCart.toLocaleString('es-CL')} - ${comprobante ? `Comp: ${comprobante}` : ''} - ${tipoEntrega}`);
     setTimeout(() => setToast(null), 3000);
     setCart([]); setShowPOS(false);
+    setComprobante(""); setDireccionEnvio(""); setTipoEntrega("Retiro");
   };
 
   const handleAddProducto = () => {
@@ -141,10 +160,13 @@ export default function App() {
                 <div className="bg-zinc-900 text-white rounded-[16px] p-4"><div className="text-[11px] text-white/60 uppercase">Funciones</div><div className="mt-2 text-[16px] font-semibold">Sistema Base OK</div><div className="text-[11px] text-white/60 mt-1">Sin controlador</div></div>
               </div>
               <div className="bg-white border rounded-[16px] p-5">
-                <h3 className="font-semibold text-[14px]">Últimas ventas - MI TIENDA</h3>
+                <h3 className="font-semibold text-[14px]">Últimas ventas - MI TIENDA (con comprobante y envío)</h3>
                 <div className="mt-4 space-y-2">
                   {ventas.map(v => (
-                    <div key={v.id} className="flex items-center justify-between py-3 border-t border-zinc-100 text-[13px]"><span>{v.id} - {v.cliente}</span><span>${v.monto.toLocaleString('es-CL')}</span><span className="text-[11px] px-2 py-1 rounded-full bg-zinc-100">{v.estado}</span></div>
+                    <div key={v.id} className="flex flex-col md:flex-row md:items-center justify-between py-3 border-t border-zinc-100 text-[13px] gap-1">
+                      <div className="flex items-center gap-2"><span className="font-medium">{v.id}</span><span className="text-zinc-500">- {v.cliente}</span><span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-900 text-white">{v.comprobante}</span></div>
+                      <div className="flex items-center gap-2"><span className={`text-[11px] px-2 py-1 rounded-full border ${v.envio==="Envío" ? "bg-sky-50 border-sky-200 text-sky-700" : "bg-zinc-100 border-zinc-200"}`}>{v.envio} {v.direccion ? `• ${v.direccion}` : ""}</span><span>${v.monto.toLocaleString('es-CL')}</span><span className="text-[11px] px-2 py-1 rounded-full bg-zinc-100">{v.estado}</span></div>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -181,11 +203,11 @@ export default function App() {
           )}
 
           {activeSection==="Pagos" && (
-            <div className="p-4 lg:p-6"><div className="bg-white border rounded-[16px] p-5"><h3 className="font-semibold">Pagos y SII - MI TIENDA</h3><div className="mt-4 space-y-2">{ventas.filter(v=>v.estado==="Pendiente").map(v=><div key={v.id} className="flex items-center justify-between p-3 bg-amber-50 border border-amber-200 rounded-[12px] text-[13px]"><span>{v.id} - {v.cliente}</span><span>${v.monto.toLocaleString('es-CL')}</span><span className="text-[11px] px-2 py-1 rounded-full bg-amber-200">Pendiente</span></div>)}{ventas.filter(v=>v.estado==="Pendiente").length===0 && <div className="text-[13px] text-zinc-500">No hay pagos pendientes. Todo al día.</div>}</div></div></div>
+            <div className="p-4 lg:p-6"><div className="bg-white border rounded-[16px] p-5"><h3 className="font-semibold">Pagos y SII - MI TIENDA (trazabilidad por comprobante)</h3><div className="mt-4 space-y-2">{ventas.map(v=><div key={v.id} className="flex flex-col md:flex-row md:items-center justify-between p-3 bg-white border rounded-[12px] text-[13px] gap-1"><div className="flex items-center gap-2"><span className="font-medium">{v.id}</span><span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-900 text-white">{v.comprobante}</span><span>{v.cliente} - {v.metodo}</span></div><div className="flex items-center gap-2"><span>${v.monto.toLocaleString('es-CL')}</span><span className={`text-[11px] px-2 py-1 rounded-full ${v.estado==="Pendiente" ? "bg-amber-100 text-amber-700" : "bg-green-50 text-green-700"}`}>{v.estado}</span></div></div>)}</div></div></div>
           )}
 
           {activeSection==="Envíos" && (
-            <div className="p-4 lg:p-6"><div className="bg-white border rounded-[16px] p-5"><h3 className="font-semibold">Envíos</h3><div className="mt-4 space-y-2">{ventas.filter(v=>v.envio==="Envío").map(v=><div key={v.id} className="flex items-center justify-between p-3 border rounded-[12px] text-[13px]"><span>{v.id} - {v.cliente}</span><span>{v.envio}</span><span className="text-[11px] px-2 py-1 rounded-full bg-sky-50 border">En camino</span></div>)}</div></div></div>
+            <div className="p-4 lg:p-6"><div className="bg-white border rounded-[16px] p-5"><h3 className="font-semibold">Envíos - MI TIENDA (cliente elige envío o retiro)</h3><div className="mt-4 space-y-2">{ventas.map(v=><div key={v.id} className="flex flex-col md:flex-row md:items-center justify-between p-3 border rounded-[12px] text-[13px] gap-1"><div className="flex items-center gap-2"><span>{v.id} - {v.cliente}</span><span className={`text-[11px] px-2 py-1 rounded-full border ${v.envio==="Envío" ? "bg-sky-50 border-sky-200" : "bg-zinc-100"}`}>{v.envio}</span>{v.comprobante && <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-900 text-white">{v.comprobante}</span>}</div><div className="text-[11px] text-zinc-500">{v.direccion || "Retiro en tienda"}</div></div>)}{ventas.length===0 && <div className="text-[13px] text-zinc-500">No hay envíos aún. Cuando el cliente elija Envío en el POS, aparecerá aquí con dirección.</div>}</div></div></div>
           )}
 
           {activeSection==="Reportes" && (
@@ -211,7 +233,23 @@ export default function App() {
                 </div>
               </div>
               <div className="w-full lg:w-[360px] bg-[#f6f6f3] flex flex-col">
-                <div className="p-4 bg-white border-b"><div className="flex justify-between"><h3 className="font-semibold text-[14px]">Carrito • {cartDetalle.length}</h3><button onClick={()=>setCart([])} className="text-[11px] text-zinc-500">Vaciar</button></div></div>
+                <div className="p-4 bg-white border-b space-y-3">
+                  <div className="flex justify-between"><h3 className="font-semibold text-[14px]">Carrito • {cartDetalle.length}</h3><button onClick={()=>setCart([])} className="text-[11px] text-zinc-500">Vaciar</button></div>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 px-3 py-2.5 rounded-[10px] border bg-zinc-50"><Users size={14} className="text-zinc-400"/><input value={clientePOS} onChange={e=>setClientePOS(e.target.value)} placeholder="Cliente (nombre / RUT)" className="flex-1 bg-transparent text-[12px] focus:outline-none" /></div>
+                    <div className="flex items-center gap-2 px-3 py-2.5 rounded-[10px] border bg-zinc-50"><Receipt size={14} className="text-zinc-400"/><input value={comprobante} onChange={e=>setComprobante(e.target.value)} placeholder="N° Comprobante (para trazabilidad)" className="flex-1 bg-transparent text-[12px] focus:outline-none" /></div>
+                  </div>
+                  <div>
+                    <div className="text-[11px] font-semibold uppercase text-zinc-400 mb-2">Tipo de entrega</div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button onClick={()=>setTipoEntrega("Retiro")} className={`p-2.5 rounded-[10px] border text-[12px] flex items-center justify-center gap-1.5 ${tipoEntrega==="Retiro" ? "bg-zinc-900 text-white border-zinc-900" : "bg-white"}`}><Package size={14}/> Retiro</button>
+                      <button onClick={()=>setTipoEntrega("Envío")} className={`p-2.5 rounded-[10px] border text-[12px] flex items-center justify-center gap-1.5 ${tipoEntrega==="Envío" ? "bg-zinc-900 text-white border-zinc-900" : "bg-white"}`}><Truck size={14}/> Envío</button>
+                    </div>
+                    {tipoEntrega==="Envío" && (
+                      <div className="mt-2 flex items-center gap-2 px-3 py-2.5 rounded-[10px] border bg-amber-50 border-amber-200"><Truck size={14} className="text-amber-600"/><input value={direccionEnvio} onChange={e=>setDireccionEnvio(e.target.value)} placeholder="Dirección de envío" className="flex-1 bg-transparent text-[12px] focus:outline-none" /></div>
+                    )}
+                  </div>
+                </div>
                 <div className="flex-1 overflow-y-auto p-3 space-y-2">
                   {cartDetalle.map(item=>(
                     <div key={item.id} className="bg-white border rounded-[12px] p-3 flex gap-3"><div className="flex-1"><div className="text-[12px] font-medium">{item.nombre}</div><div className="text-[11px] text-zinc-500">${item.precio.toLocaleString('es-CL')} x {item.qty}</div></div><span className="font-semibold text-[12px]">${item.subtotal.toLocaleString('es-CL')}</span></div>
@@ -221,6 +259,7 @@ export default function App() {
                 <div className="p-4 bg-white border-t space-y-3">
                   <div className="grid grid-cols-2 gap-2">{["Webpay","Transferencia","Efectivo","Mercado Pago"].map(m=><button key={m} onClick={()=>setMetodoPago(m)} className={`p-2.5 rounded-[10px] border text-[12px] ${metodoPago===m ? "bg-zinc-900 text-white" : "bg-white"}`}>{m}</button>)}</div>
                   <div className="flex justify-between font-semibold text-[16px]"><span>Total</span><span>${totalCart.toLocaleString('es-CL')}</span></div>
+                  <div className="text-[11px] text-zinc-500 text-center">Comp: {comprobante || "auto"} • {tipoEntrega} {tipoEntrega==="Envío" && direccionEnvio ? `- ${direccionEnvio}` : ""}</div>
                   <button disabled={cartDetalle.length===0} onClick={confirmarVenta} className="w-full bg-[#00B86F] text-white font-semibold py-3.5 rounded-[14px] flex items-center justify-center gap-2 disabled:bg-zinc-200"><Zap size={18}/> Cobrar ${totalCart.toLocaleString('es-CL')}</button>
                 </div>
               </div>

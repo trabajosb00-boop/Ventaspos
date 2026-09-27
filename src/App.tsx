@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import jsPDF from "jspdf";
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -21,57 +22,9 @@ import {
   CheckCircle,
   AlertTriangle,
   Edit,
-  UserPlus
-} from "lucide-react";
-
-type Producto = { id: number; nombre: string; sku: string; stock: number; precio: number; categoria: string; img: string; };
-type Cliente = { id: string; nombre: string; rut: string; telefono: string; email: string; direccion: string; comuna: string; ciudad: string; notas: string; totalCompras: number; };
-type ItemVenta = { id: number; nombre: string; qty: number; precio: number; subtotal: number; };
-type Venta = { 
-  id: string; 
-  cliente: string; 
-  clienteId: string;
-  monto: number; 
-  metodo: string; 
-  estado: string; 
-  hora: string; 
-  fecha: string;
-  envio: "Retiro" | "Envío"; 
-  comprobante: string; 
-  direccion?: string;
-  comuna?: string;
-  telefono?: string;
-  productos: ItemVenta[];
-  estadoEnvio?: "Pendiente" | "Preparando" | "En camino" | "Entregado" | "Cancelado";
-  fechaEntrega?: string;
-  notasEnvio?: string;
-  costoEnvio?: number;
-};
-
-import React, { useState, useMemo, useEffect } from "react";
-import {
-  LayoutDashboard,
-  ShoppingCart,
-  Package,
-  Users,
-  Receipt,
-  Truck,
-  BarChart3,
-  Search,
-  Plus,
-  X,
-  Zap,
-  Trash2,
-  Save,
-  MapPin,
-  Phone,
-  Mail,
-  FileText,
-  Clock,
-  CheckCircle,
-  AlertTriangle,
-  Edit,
-  UserPlus
+  UserPlus,
+  Download,
+  Printer
 } from "lucide-react";
 
 type Producto = { id: number; nombre: string; sku: string; stock: number; precio: number; categoria: string; img: string; };
@@ -155,8 +108,7 @@ export default function App() {
   const [lastVenta, setLastVenta] = useState<Venta | null>(null);
   const [showBoletaModal, setShowBoletaModal] = useState(false);
 
-  useEffect(() => { localStorage.setItem('mitienda_productos_v2', JSON.stringify(productos)); }, [productos]);
-  useEffect(() => { localStorage.setItem('mitienda_clientes_v2', JSON.stringify(clientes)); }, [clientes]);
+useEffect(() => { localStorage.setItem('mitienda_clientes_v2', JSON.stringify(clientes)); }, [clientes]);
   useEffect(() => { localStorage.setItem('mitienda_ventas_v2', JSON.stringify(ventas)); }, [ventas]);
 
   const productosFiltrados = useMemo(() => productos.filter(p => p.nombre.toLowerCase().includes(search.toLowerCase()) || p.sku.toLowerCase().includes(search.toLowerCase())), [productos, search]);
@@ -256,7 +208,7 @@ export default function App() {
       notasEnvio: notasEnvio || undefined,
       costoEnvio: parseInt(costoEnvio) || 0
     };
-    
+
     setVentas(v => [nuevaVenta, ...v]);
     if (clientePOS) {
       setClientes(prev => prev.map(c => c.id === clientePOS.id ? { ...c, totalCompras: c.totalCompras + 1 } : c));
@@ -307,7 +259,7 @@ export default function App() {
     { id: "Reportes", icon: BarChart3, label: "Reportes" },
   ];
 
-return (
+  return (
     <div className="min-h-screen bg-[#fbfbfa] text-zinc-900">
       <div className="flex">
         <aside className={`fixed lg:static inset-y-0 left-0 w-[260px] bg-white border-r border-zinc-200 z-40 flex flex-col transition-transform ${mobileMenu ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
@@ -470,9 +422,15 @@ return (
                         </div>
                       </div>
 
-                      <div className="flex gap-2">
-                        <button className="flex-1 py-2.5 rounded-[10px] bg-zinc-900 text-white text-[12px] flex items-center justify-center gap-1"><Truck size={14}/> Imprimir guía</button>
-                        <button className="flex-1 py-2.5 rounded-[10px] border text-[12px]">Contactar cliente</button>
+                      <div className="space-y-2">
+                        <div className="grid grid-cols-2 gap-2">
+                          <button onClick={()=>descargarPDFGuia(selectedEnvio)} className="py-2.5 rounded-[10px] bg-sky-600 text-white text-[12px] flex items-center justify-center gap-1"><Printer size={14}/> Imprimir Guía PDF</button>
+                          <button onClick={()=>descargarPDFBoleta(selectedEnvio)} className="py-2.5 rounded-[10px] bg-zinc-900 text-white text-[12px] flex items-center justify-center gap-1"><Download size={14}/> Boleta PDF</button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <button onClick={()=>enviarWhatsApp(selectedEnvio)} className="py-2.5 rounded-[10px] bg-[#25D366] text-white text-[12px] flex items-center justify-center gap-1"><Phone size={14}/> WhatsApp PDF</button>
+                          <button onClick={()=>enviarEmail(selectedEnvio)} className="py-2.5 rounded-[10px] border text-[12px] flex items-center justify-center gap-1"><Mail size={14}/> Email PDF</button>
+                        </div>
                       </div>
                     </div>
                   ) : (
@@ -493,7 +451,7 @@ return (
         </main>
       </div>
 
-      {showPOS && (
+            {showPOS && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex">
           <div className="ml-auto w-full max-w-[1020px] h-full bg-white shadow-2xl flex flex-col">
             <div className="h-[64px] px-5 flex items-center justify-between border-b shrink-0"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-[10px] bg-zinc-900 text-white flex items-center justify-center"><ShoppingCart size={16}/></div><div><div className="font-semibold text-[14px]">POS • MI TIENDA - Envío asociado a cliente</div><div className="text-[11px] text-zinc-500">Cliente obligatorio para envío + autocompletar dirección</div></div></div><button onClick={()=>setShowPOS(false)} className="w-8 h-8 rounded-full border flex items-center justify-center"><X size={16}/></button></div>
@@ -594,9 +552,9 @@ return (
 
       {showBoletaModal && lastVenta && (
         <div className="fixed inset-0 z-[80] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-[16px] p-6 w-full max-w-[400px] shadow-2xl">
+          <div className="bg-white rounded-[16px] p-5 w-full max-w-[420px] shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3"><div className="w-10 h-10 rounded-full bg-[#00B86F]/10 flex items-center justify-center"><CheckCircle size={20} className="text-[#00B86F]"/></div><div><div className="font-semibold text-[14px]">Venta {lastVenta.id} creada</div><div className="text-[11px] text-zinc-500">{lastVenta.cliente} • {lastVenta.comprobante}</div></div></div>
+              <div className="flex items-center gap-3"><div className="w-10 h-10 rounded-full bg-[#00B86F]/10 flex items-center justify-center"><CheckCircle size={20} className="text-[#00B86F]"/></div><div><div className="font-semibold text-[14px]">Venta {lastVenta.id} creada</div><div className="text-[11px] text-zinc-500">{lastVenta.cliente} • {lastVenta.comprobante} • PDF listo</div></div></div>
               <button onClick={()=>setShowBoletaModal(false)} className="p-1.5 rounded-full border"><X size={14}/></button>
             </div>
             
@@ -605,29 +563,35 @@ return (
               <div className="text-zinc-600">{lastVenta.productos.length} productos • {lastVenta.envio} {lastVenta.direccion ? `• ${lastVenta.direccion}` : ""}</div>
             </div>
 
-            <div className="mt-5">
-              <div className="text-[12px] font-semibold mb-2">Enviar boleta a cliente</div>
-              <div className="text-[11px] text-zinc-500 mb-3">Usa el teléfono o email registrado del cliente</div>
-              
+            <div className="mt-4">
+              <div className="text-[12px] font-semibold mb-1 flex items-center gap-1"><FileText size={12}/> Boleta en PDF</div>
+              <div className="text-[11px] text-zinc-500 mb-2">Ahora la boleta se genera en PDF profesional</div>
+              <button onClick={()=>descargarPDFBoleta(lastVenta)} className="w-full py-2.5 rounded-[10px] bg-zinc-900 text-white text-[12px] flex items-center justify-center gap-2"><Download size={14}/> Descargar Boleta PDF - {lastVenta.comprobante}</button>
+            </div>
+
+            <div className="mt-4">
+              <div className="text-[12px] font-semibold mb-2">Enviar boleta PDF por WhatsApp / Correo</div>
+              <div className="text-[11px] text-zinc-500 mb-2">Se descarga el PDF automaticamente y luego abre WhatsApp/Email para adjuntar</div>
               <div className="grid grid-cols-2 gap-2">
                 <button onClick={()=>enviarWhatsApp(lastVenta)} className="py-3 rounded-[12px] bg-[#25D366] text-white text-[12px] font-medium flex flex-col items-center gap-1">
-                  <Phone size={18}/> WhatsApp
-                  <span className="text-[10px] opacity-80">{lastVenta.telefono || clientes.find(c=>c.id===lastVenta.clienteId)?.telefono || "Sin teléfono"}</span>
+                  <Phone size={18}/> WhatsApp PDF
+                  <span className="text-[10px] opacity-80 truncate max-w-[120px]">{lastVenta.telefono || clientes.find(c=>c.id===lastVenta.clienteId)?.telefono || "Sin teléfono"}</span>
                 </button>
                 <button onClick={()=>enviarEmail(lastVenta)} className="py-3 rounded-[12px] bg-zinc-900 text-white text-[12px] font-medium flex flex-col items-center gap-1">
-                  <Mail size={18}/> Email
+                  <Mail size={18}/> Email PDF
                   <span className="text-[10px] opacity-70 truncate max-w-[120px]">{clientes.find(c=>c.id===lastVenta.clienteId)?.email || "Sin email"}</span>
                 </button>
               </div>
+            </div>
 
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                <button onClick={()=>{ navigator.clipboard.writeText(generarMensajeBoleta(lastVenta)); setToast("Boleta copiada"); setTimeout(()=>setToast(null),2000); }} className="py-2.5 rounded-[10px] border text-[11px] flex items-center justify-center gap-1"><FileText size={12}/> Copiar boleta</button>
-                <button onClick={()=>setShowBoletaModal(false)} className="py-2.5 rounded-[10px] bg-zinc-100 text-[11px]">Cerrar</button>
-              </div>
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              <button onClick={()=>{ navigator.clipboard.writeText(generarMensajeBoleta(lastVenta)); setToast("Boleta copiada"); setTimeout(()=>setToast(null),2000); }} className="py-2.5 rounded-[10px] border text-[11px] flex items-center justify-center gap-1"><FileText size={12}/> Copiar</button>
+              <button onClick={()=>descargarPDFGuia(lastVenta)} className="py-2.5 rounded-[10px] border text-[11px] flex items-center justify-center gap-1"><Truck size={12}/> Guia PDF</button>
+              <button onClick={()=>setShowBoletaModal(false)} className="py-2.5 rounded-[10px] bg-zinc-100 text-[11px]">Cerrar</button>
+            </div>
 
-              <div className="mt-3 p-2.5 bg-amber-50 border border-amber-200 rounded-[10px] text-[10px] text-amber-800">
-                💡 WhatsApp abre wa.me con el mensaje listo. Email abre tu cliente de correo con la boleta.
-              </div>
+            <div className="mt-3 p-2.5 bg-sky-50 border border-sky-200 rounded-[10px] text-[10px] text-sky-800">
+              💡 PDF: Al tocar WhatsApp o Email, el PDF se descarga primero. Luego adjuntalo manualmente en la conversacion/correo. Es la forma estandar para PDFs.
             </div>
           </div>
         </div>
